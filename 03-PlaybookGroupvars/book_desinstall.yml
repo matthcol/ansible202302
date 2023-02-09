@@ -1,0 +1,14 @@
+---
+- name: Desnstall application
+  hosts: group1
+
+  tasks:
+    - name: Remove application directory
+      file:
+        path: "{{ appdir }}"
+        state: absent
+    - name: Remove User
+      user:
+        name: "{{ appuser }}"
+        state: absent
+        force: true

@@ -1,0 +1,48 @@
+# Playbook deploying my super app with user appu 
+# Version: 1.0
+---
+# Play 1
+- name: Install application
+  hosts: group1
+  vars:
+    appuser: appu
+    appdir: /opt/app
+
+  tasks:
+
+    # Task 1
+    - name: Create User
+      user:
+        name: "{{ appuser }}"
+        create_home: false
+        home: "{{ appdir }}"
+        shell: /usr/bin/bash
+        system: true
+
+    # Task 2
+    - name: Create application directory
+      file:
+        path: "{{ appdir }}"
+        state: directory
+        owner: "{{ appuser }}"
+        group: "{{ appuser }}"
+        mode: 0750
+
+    # Task 3
+    - name: Debug 1
+      debug:
+        msg: "Task #3 of Play #1"
+
+
+# Play 2
+- name: Dummy Play 2
+  hosts: group1
+  tasks:
+
+    - name: Debug 2
+      debug:
+        msg: Task#1 of Play#2
+
+    - name: Debug 3
+      debug:
+        msg: Task#2 of Play#2
