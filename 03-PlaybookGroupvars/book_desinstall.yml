@@ -1,5 +1,5 @@
 ---
-- name: Desnstall application
+- name: Desinstall application
   hosts: group1
 
   tasks:
@@ -12,3 +12,18 @@
         name: "{{ appuser }}"
         state: absent
         force: true
+
+- name: Desinstall DB
+  hosts: group2
+  tasks:
+
+    # desinstall software + data (don't do that in prod!!!!!!)
+    - name: Desinstall Postgresql server
+      apt:
+        name: 
+          - postgresql-13
+          - postgresql-common
+        autoremove: true
+        purge: true
+        state: absent
+

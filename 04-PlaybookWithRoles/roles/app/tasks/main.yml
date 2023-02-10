@@ -1,0 +1,46 @@
+---
+- name: App deploy
+  debug:
+    msg: App deploy
+
+- name: Create User
+  user:
+    name: "{{ appuser }}"
+    create_home: false
+    home: "{{ appdir }}"
+    shell: /usr/bin/bash
+    system: true
+
+- name: Create application directory
+  file:
+    path: "{{ appdir }}"
+    state: directory
+    owner: "{{ appuser }}"
+    group: "{{ appuser }}"
+    mode: 0750
+
+- name: Copy app artifact
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ appdir }}/{{ item.dest }}"
+    owner: "{{ appuser }}"
+    group: "{{ appuser }}"
+    mode: preserve
+  with_items: 
+    - { 'src': 'movieapi-11.jar', 'dest': 'movieapi.jar' }
+    - { 'src': 'appli.sh', 'dest': 'appli.sh' }
+
+- name: Copy app config
+  template:
+    src: application-properties.j2
+    dest: "{{ appdir }}/application-properties"
+    owner: "{{ appuser }}"
+    group: "{{ appuser }}"
+    mode: preserve
+
+- name: Install Java Runtime Environment
+  tags: software
+  apt:
+    name: openjdk-{{ java_version }}-jre
+    state: present
+  when: ansible_facts['os_family'] == 'Debian'

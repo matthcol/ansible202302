@@ -1,0 +1,5 @@
+db_host: groups['dbserver'][0]
+db_port: 5432
+db_name: dbmovie
+db_user: umovie
+db_password: password

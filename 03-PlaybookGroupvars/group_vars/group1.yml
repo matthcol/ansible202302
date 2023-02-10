@@ -1,2 +1,7 @@
 appuser: appu
 appdir: /opt/app
+dummyparam: 123
+files_to_copy:
+  - files/dummy.txt
+  - files/dicton.txt
+  - files/meteo.md

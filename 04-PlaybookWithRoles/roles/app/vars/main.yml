@@ -1,0 +1,3 @@
+appuser: appu
+appdir: /opt/app
+java_version: 11

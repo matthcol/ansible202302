@@ -1,0 +1,4 @@
+---
+- name: Db deploy
+  debug:
+    msg: Db deploy

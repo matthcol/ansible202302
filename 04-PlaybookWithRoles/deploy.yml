@@ -1,0 +1,15 @@
+---
+- name: Deploy Application
+  hosts: appservers
+  tags: app
+  roles: 
+    - common
+    - app
+
+- name: Deploy Database
+  hosts: dbserver
+  tags: db
+  roles: 
+    - common
+    - db
+

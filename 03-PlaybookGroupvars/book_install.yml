@@ -4,6 +4,7 @@
 # Play 1
 - name: Install application
   hosts: group1
+  tags: app
 
   tasks:
     
@@ -37,16 +38,82 @@
       debug:
         msg: "Task #3 of Play #1"
 
+    - name: Copy app artifact
+      copy:
+        src: "{{ item }}"
+        dest: "{{ appdir }}/"
+        owner: "{{ appuser }}"
+        group: "{{ appuser }}"
+        mode: preserve
+      with_items: "{{ files_to_copy }}"
+      #with_items:
+      #  - files/dummy.txt
+      #  - files/dicton.txt
+      #  - files/meteo.md
+
+    - name: Copy app config
+      template:
+        src: dummyconfig.j2
+        dest: "{{ appdir }}/dummyconfig.conf"
+        owner: "{{ appuser }}"
+        group: "{{ appuser }}"
+        mode: preserve
+
 
 # Play 2
 - name: Dummy Play 2
   hosts: group1
+  tags: vars
   tasks:
 
-    - name: Debug 2
+    - name: Debug var groups
       debug:
-        msg: Task#1 of Play#2
+        var: groups['group2'][0]
 
-    - name: Debug 3
+    - name: Debug var ansible facts
       debug:
-        msg: Task#2 of Play#2
+        msg: "{{ ansible_facts['os_family'] }}"
+
+    - name: Debug hosts from group1
+      debug:
+        msg: "{{ item }}"
+      with_items: "{{ groups['group1'] }}"
+
+    - name: Debug items
+      debug:
+        msg: "{{ item }}"
+      with_items:
+        - dummy
+        - coffee
+        - sun
+        - snow
+
+
+# Play 3
+- name: Install DB
+  hosts: group2
+  tags: db
+
+  tasks:
+
+    - name: Install Postgresql server apt
+      tags: software
+      apt:
+        name: postgresql-13
+        state: present
+      when: ansible_facts['os_family'] == 'Debian'
+
+    - name: Install Postgresql server yum
+      tags: software
+      yum:
+        name: postgresql-13
+        state: present
+      when: ansible_facts['os_family'] in rhl_family # ['RedHat', 'CentOS']
+
+    - name: Stop service
+      systemd:
+        name: postgresql
+        state: stopped
+
+
+
