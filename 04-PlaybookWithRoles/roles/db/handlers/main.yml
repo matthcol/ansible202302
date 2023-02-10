@@ -1,0 +1,5 @@
+- name: Handler Restart Posgresql
+  systemd:
+    name: postgresql
+    state: restarted
+  listen: Restart PostgreSQL

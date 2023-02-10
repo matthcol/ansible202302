@@ -18,40 +18,38 @@
   apt:
     name: python3-psycopg2
 
-- name: Create DB
+- name: Admin Postgresql Tasks
+  block:
+    - name: Create DB
+      community.postgresql.postgresql_db:
+        name: "{{ db_name }}"
+        encoding: UTF-8
+    
+    - name: Create DB User
+      community.postgresql.postgresql_user:
+        name: "{{ db_user }}"
+        password: "{{ db_password }}"
+        role_attr_flags: LOGIN
+    
+    - name: Conf pg_hba
+      community.postgresql.postgresql_pg_hba:
+        dest: /etc/postgresql/13/main/pg_hba.conf
+        contype: host
+        users: "{{ db_user }}"
+        source: 192.168.56.0/24
+        databases: "{{ db_name }}"
+        method: md5
+    
+    - name: Postgresql.conf
+      lineinfile:
+        path: /etc/postgresql/13/main/postgresql.conf
+        regexp: "listen_addresses"
+        line: "listen_addresses='*'"
+      notify:
+        - Restart PostgreSQL
+
   become: yes
   become_user: postgres
-  community.postgresql.postgresql_db:
-    name: "{{ db_name }}"
-    encoding: UTF-8
-
-- name: Create DB User
-  become: yes
-  become_user: postgres
-  community.postgresql.postgresql_user:
-    name: "{{ db_user }}"
-    password: "{{ db_password }}"
-    role_attr_flags: LOGIN
-
-- name: Conf pg_hba
-  become: yes
-  become_user: postgres
-  community.postgresql.postgresql_pg_hba:
-    dest: /etc/postgresql/13/main/pg_hba.conf
-    contype: host
-    users: "{{ db_user }}"
-    source: 192.168.56.0/24
-    databases: "{{ db_name }}"
-    method: md5
-
-- name: Postgresql.conf
-  become: yes
-  become_user: postgres
-  lineinfile:
-    path: /etc/postgresql/13/main/postgresql.conf
-    regexp: "listen_addresses"
-    line: "listen_addresses='*'"
-
 
 
 
