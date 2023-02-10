@@ -2,3 +2,62 @@
 - name: Db deploy
   debug:
     msg: Db deploy
+
+- name: PosgreSQL Server
+  apt:
+    name: postgresql-13
+    state: present
+
+- name: PostgreSQL Service
+  systemd:
+    name: postgresql
+    state: started
+    enabled: true
+
+- name: Driver Python PostgreSQL
+  apt:
+    name: python3-psycopg2
+
+- name: Create DB
+  become: yes
+  become_user: postgres
+  community.postgresql.postgresql_db:
+    name: "{{ db_name }}"
+    encoding: UTF-8
+
+- name: Create DB User
+  become: yes
+  become_user: postgres
+  community.postgresql.postgresql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_password }}"
+    role_attr_flags: LOGIN
+
+- name: Conf pg_hba
+  become: yes
+  become_user: postgres
+  community.postgresql.postgresql_pg_hba:
+    dest: /etc/postgresql/13/main/pg_hba.conf
+    contype: host
+    users: "{{ db_user }}"
+    source: 192.168.56.0/24
+    databases: "{{ db_name }}"
+    method: md5
+
+- name: Postgresql.conf
+  become: yes
+  become_user: postgres
+  lineinfile:
+    path: /etc/postgresql/13/main/postgresql.conf
+    regexp: "listen_addresses"
+    line: "listen_addresses='*'"
+
+
+
+
+
+
+
+
+
+
